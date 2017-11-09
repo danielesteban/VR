@@ -7,5 +7,5 @@ uniform mat4 view;
 
 void main(void) {
   gl_Position = projection * view * vec4(position, 1.0);
-  gridPosition = vec2(position.x * 32.0, position.z * 32.0);
+  gridPosition = vec2(position.x, position.y);
 }

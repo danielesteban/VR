@@ -17,13 +17,6 @@ class Physics {
     this.world = world;
     this.bodies = [];
     this.shapes = [];
-
-    const groundShape = this.getShape({ shape: 'box', extents: [32, 1, 32] });
-    const ground = new CANNON.Body({ mass: 0, collisionFilterGroup: 1, collisionFilterMask: 2 });
-    ground.addShape(groundShape);
-    ground.position.set(0, -0.5, 0);
-    world.addBody(ground);
-    this.ground = ground;
   }
   addBody(physics, position, rotation) {
     const { world } = this;
@@ -94,37 +87,36 @@ class Physics {
     world.addConstraint(constraint);
     return constraint;
   }
-  getClosestBody({ from, to }) {
+  getClosestBody({
+    collisionFilterMask,
+    from,
+    to,
+  }) {
     const { world } = this;
     const ray = new CANNON.Ray(
       new CANNON.Vec3(from[0], from[1], from[2]),
       new CANNON.Vec3(to[0], to[1], to[2])
     );
     ray.intersectWorld(world, {
-      collisionFilterGroup: 2,
-      collisionFilterMask: 2,
+      collisionFilterMask: collisionFilterMask || 2,
       mode: CANNON.Ray.CLOSEST,
-      skipBackfaces: true,
     });
     return ray.result.hasHit ? ray.result : false;
   }
-  getGroundPoint({ from, to }) {
-    const ray = new CANNON.Ray(
-      new CANNON.Vec3(from[0], from[1], from[2]),
-      new CANNON.Vec3(to[0], to[1], to[2])
-    );
-    const result = new CANNON.RaycastResult();
-    ray.intersectBody(this.ground, result);
-    return result.hasHit ? result : false;
-  }
-  getShape({ shape, extents }) {
+  getShape({ shape, extents, heightfield }) {
     const { shapes } = this;
-    const id = `${shape}:${extents.join(',')}`;
+    const id = `${shape}:${(extents || []).join(',')}`;
     if (!shapes[id]) {
       switch (shape) {
         case 'box':
           shapes[id] = new CANNON.Box(
             new CANNON.Vec3(extents[0] * 0.5, extents[1] * 0.5, extents[2] * 0.5)
+          );
+          break;
+        case 'heightfield':
+          shapes[id] = new CANNON.Heightfield(
+            heightfield,
+            { elementSize: 2 }
           );
           break;
         default:

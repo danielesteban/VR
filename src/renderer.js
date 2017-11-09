@@ -1,5 +1,5 @@
 import classNames from 'classnames/bind';
-import { glMatrix, mat4, quat, vec3 } from 'gl-matrix';
+import { glMatrix, mat4, vec3 } from 'gl-matrix';
 import requestAnimationFrame from 'raf';
 import Model from './model';
 import Shader from './shader';

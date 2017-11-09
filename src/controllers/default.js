@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, quat, vec3 } from 'gl-matrix';
 import Mesh from '../mesh';
 
 const DefaultControllers = (scene, model = 'Cube') => {
@@ -31,7 +31,8 @@ const DefaultControllers = (scene, model = 'Cube') => {
         // Translocation
         const marker = markers[controller];
         if (buttons[0].pressed) {
-          const point = scene.physics.getGroundPoint({
+          const point = scene.physics.getClosestBody({
+            collisionFilterMask: 1,
             from: position,
             to: vec3.scaleAndAdd(vec3.create(), position, vec3.transformQuat(
               vec3.create(),
@@ -40,12 +41,30 @@ const DefaultControllers = (scene, model = 'Cube') => {
             ), 32),
           });
           if (point) {
-            marker.position = vec3.fromValues(
-              point.hitPointWorld.x,
-              0.001,
-              point.hitPointWorld.z
+            quat.rotationTo(
+              marker.rotation,
+              vec3.fromValues(
+                point.hitNormalWorld.x,
+                point.hitNormalWorld.y,
+                point.hitNormalWorld.z
+              ),
+              vec3.fromValues(0, 1, 0)
             );
-            mat4.fromTranslation(marker.view, marker.position);
+            quat.invert(marker.rotation, marker.rotation);
+            vec3.add(marker.position, vec3.fromValues(
+              point.hitPointWorld.x,
+              point.hitPointWorld.y,
+              point.hitPointWorld.z
+            ), vec3.transformQuat(
+              vec3.create(),
+              vec3.fromValues(0, 0.1, 0),
+              marker.rotation
+            ));
+            mat4.fromRotationTranslation(
+              marker.view,
+              marker.rotation,
+              marker.position
+            );
             marker.setVisible(true);
           } else {
             marker.setVisible(false);

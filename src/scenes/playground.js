@@ -9,7 +9,7 @@ class Playground extends Scene {
 
     {
       // Hovering cubes
-      const count = 3;
+      const count = 5;
       const distance = 1.5;
       const step = (Math.PI * 2) / count;
       let offset = 0;
@@ -18,7 +18,7 @@ class Playground extends Scene {
           offset += delta * 0.5;
         }
         const angle = offset + (index * step);
-        vec3.set(mesh.position, Math.cos(angle) * distance, 1.6, Math.sin(angle) * distance);
+        vec3.set(mesh.position, Math.cos(angle) * distance, 2, Math.sin(angle) * distance);
         quat.rotateY(mesh.rotation, mesh.rotation, delta * 1.5);
         mat4.fromRotationTranslationScale(
           mesh.view, mesh.rotation, mesh.position, mesh.scale
@@ -52,14 +52,14 @@ class Playground extends Scene {
     {
       // Cubes with physics
       const count = 10;
-      const distance = 3;
+      const distance = 8;
       const step = (Math.PI * 2) / count;
-      for (let y = 0; y < 3; y += 1) {
+      for (let y = 0; y < 4; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            3 + y,
+            (distance / 2) + y,
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -85,13 +85,24 @@ class Playground extends Scene {
       }
     }
 
-    // The floor
-    meshes.push(
-      new Mesh({
-        model: renderer.getModel('Floor'),
-        scale: vec3.fromValues(32, 0, 32),
-      })
-    );
+    {
+      // The ground
+      const model = renderer.getModel('Ground');
+      meshes.push(
+        new Mesh({
+          model,
+          position: vec3.fromValues(
+            -32, 0, 32
+          ),
+          physics: {
+            mass: 0,
+            heightfield: model.heightfield,
+            shape: 'heightfield',
+          },
+          rotation: quat.fromEuler(quat.create(), -90, 0, 0),
+        })
+      );
+    }
 
     {
       // A starfield

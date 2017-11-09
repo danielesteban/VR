@@ -5,12 +5,14 @@ class Model {
     const { GL } = renderer;
 
     const {
+      heightfield,
       index,
       shader,
       type,
       vertices,
     } = Models[id];
 
+    this.heightfield = heightfield;
     this.renderer = renderer;
     this.shader = renderer.getShader(shader);
     this.type = type;

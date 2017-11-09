@@ -50,7 +50,7 @@ class Scene {
     const { display, stage } = this;
     vec3.add(stage.position, stage.position, vec3.fromValues(
       position[0] - display.position[0],
-      0,
+      position[1] - stage.position[1],
       position[2] - display.position[2]
     ));
     mat4.fromTranslation(stage.view, stage.position);
