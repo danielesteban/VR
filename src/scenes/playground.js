@@ -33,7 +33,7 @@ class Playground extends Scene {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            1.5 + y,
+            2 + y,
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -114,7 +114,7 @@ class Playground extends Scene {
             extents: scale,
             shape: 'box',
           },
-          position: vec3.fromValues(0, 1, 0),
+          position: vec3.fromValues(0, 1.5, 0),
           scale,
         })
       );
@@ -162,7 +162,7 @@ class Playground extends Scene {
     super.init({
       meshes,
       renderer,
-      stagePosition: vec3.fromValues(0, 1.25, 0),
+      stagePosition: vec3.fromValues(0, 1.75, 0),
     });
   }
 }

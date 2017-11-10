@@ -81,7 +81,7 @@ class Scene {
     Physics.applyImpulse(mesh.physics.body, vec3.transformQuat(
       vec3.create(),
       vec3.fromValues(
-        0, 0, -10
+        0, 0, -64
       ),
       rotation
     ));
