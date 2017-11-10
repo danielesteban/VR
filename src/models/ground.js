@@ -24,7 +24,7 @@ const Ground = (() => {
       const y = j * stride;
       const height = Math.sqrt(
         ((center.x - x) ** 2) + ((center.y - y) ** 2)
-      ) * 0.3;
+      ) * 0.4;
       const noise = (Math.random() - 0.5) * 0.3;
       const z = (height >= summit ? (summit * 2) - height : height) + noise;
       heightfield[i][j] = z;

@@ -1,10 +1,14 @@
 import { mat3, mat4, quat, vec3 } from 'gl-matrix';
+import * as Controllers from './controllers';
+import Mesh from './mesh';
 import Physics from './physics';
 
 class Scene {
   init({
+    controllers,
     meshes,
     renderer,
+    stagePosition,
   }) {
     this.auxView = mat4.create();
     this.display = {
@@ -14,17 +18,18 @@ class Scene {
     this.meshes = meshes;
     this.physics = new Physics();
     this.stage = {
-      position: vec3.create(),
+      position: stagePosition || vec3.create(),
       view: mat4.create(),
     };
-    this.setStagePosition(vec3.fromValues(0, 0, 0));
+    this.setStagePosition(this.stage.position);
     this.renderer = renderer;
+    this.spheres = [];
     this.meshes.forEach((mesh) => {
       if (mesh.physics) {
-        // eslint-disable-next-line no-param-reassign
-        mesh.physics.body = this.physics.addBody(mesh.physics, mesh.position, mesh.rotation);
+        this.physics.addBody(mesh);
       }
     });
+    Controllers[controllers || 'default'](this);
   }
   animate(delta, controllers) {
     const { meshes, physics } = this;
@@ -32,6 +37,56 @@ class Scene {
     meshes.forEach(mesh => (
       mesh.animate(delta, controllers)
     ));
+  }
+  onFire({
+    position,
+    rotation,
+  }) {
+    const {
+      meshes,
+      physics,
+      renderer,
+      spheres,
+    } = this;
+    if (spheres.length >= 16) {
+      const sphere = spheres.shift();
+      physics.removeBody(sphere.physics.body);
+      meshes.splice(meshes.findIndex(m => (m === sphere)), 1);
+    }
+    const scale = vec3.fromValues(0.3, 0.3, 0.3);
+    const mesh = new Mesh({
+      albedo: vec3.fromValues(
+        0.5 + (Math.random() * 0.5),
+        0.5 + (Math.random() * 0.5),
+        0.5 + (Math.random() * 0.5)
+      ),
+      model: renderer.getModel('Sphere'),
+      position: vec3.add(
+        vec3.create(),
+        position,
+        vec3.transformQuat(
+          vec3.create(),
+          vec3.fromValues(0, 0, -0.3),
+          rotation
+        )
+      ),
+      physics: {
+        extents: [scale[0] / 2],
+        mass: 3,
+        shape: 'sphere',
+      },
+      scale,
+    });
+    physics.addBody(mesh);
+    Physics.applyImpulse(mesh.physics.body, vec3.transformQuat(
+      vec3.create(),
+      vec3.fromValues(
+        0, 0, -10
+      ),
+      rotation
+    ));
+    spheres.push(mesh);
+    meshes.push(mesh);
   }
   render(projection, view) {
     const { auxView, stage: { view: stageView } } = this;

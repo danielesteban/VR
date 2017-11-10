@@ -18,7 +18,7 @@ class Renderer {
     mount.appendChild(canvas);
 
     const GL = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    GL.clearColor(0, 0, 0, 1);
+    GL.clearColor(0, 0.094, 0.282, 1);
     GL.enable(GL.DEPTH_TEST);
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);

@@ -2,6 +2,7 @@ import { mat4, quat, vec3 } from 'gl-matrix';
 
 class Mesh {
   constructor({
+    albedo,
     model,
     onAnimate,
     physics,
@@ -10,6 +11,7 @@ class Mesh {
     scale,
     visible,
   }) {
+    this.albedo = albedo;
     this.auxView = mat4.create();
     this.isVisible = visible !== undefined ? visible : true;
     this.model = model;
@@ -60,6 +62,7 @@ class Mesh {
   }
   render(projection, view) {
     const {
+      albedo,
       auxView,
       isVisible,
       model,
@@ -67,7 +70,11 @@ class Mesh {
     } = this;
     if (!isVisible) return;
     mat4.multiply(auxView, view, meshView);
-    model.render(projection, auxView);
+    model.render({
+      albedo,
+      projection,
+      view: auxView,
+    });
   }
   setVisible(isVisible) {
     this.isVisible = isVisible;

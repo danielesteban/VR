@@ -5,6 +5,7 @@ const DefaultControllers = (scene, model = 'Cube') => {
   const markers = [];
   for (let i = 0; i < 2; i += 1) {
     const marker = new Mesh({
+      albedo: vec3.fromValues(0, 0.094, 0.282),
       model: scene.renderer.getModel('Marker'),
       position: vec3.create(),
       visible: false,
@@ -12,6 +13,7 @@ const DefaultControllers = (scene, model = 'Cube') => {
     markers.push(marker);
     scene.meshes.unshift(marker);
   }
+  const firing = [];
   const constraints = [];
   const animateController = controller => (
     (mesh, delta, controllers) => {
@@ -38,7 +40,7 @@ const DefaultControllers = (scene, model = 'Cube') => {
               vec3.create(),
               vec3.fromValues(0, 0, -1),
               rotation
-            ), 32),
+            ), 8),
           });
           if (point) {
             quat.rotationTo(
@@ -74,9 +76,19 @@ const DefaultControllers = (scene, model = 'Cube') => {
           marker.setVisible(false);
         }
 
+        // Firing
+        if (buttons[1].pressed) {
+          if (!firing[controller]) {
+            firing[controller] = true;
+            scene.onFire({ position, rotation });
+          }
+        } else if (firing[controller]) {
+          firing[controller] = false;
+        }
+
         // Picking objects
         const picking = constraints[controller];
-        if (buttons[1].pressed) {
+        if (buttons[2].pressed) {
           if (picking) {
             picking.update();
           } else {
@@ -135,22 +147,24 @@ const DefaultControllers = (scene, model = 'Cube') => {
     }
   );
   for (let i = 0; i < 2; i += 1) {
+    const scale = vec3.fromValues(0.05, 0.025, 0.1);
     const mesh = new Mesh({
+      albedo: vec3.fromValues(1.0, 1.0, 1.0),
       model: scene.renderer.getModel(model),
       onAnimate: animateController(i),
       physics: {
         collisionFilterGroup: 0,
         collisionFilterMask: 0,
         shape: 'box',
-        extents: [0.05, 0.025, 0.1],
+        extents: scale,
         mass: 0,
         type: 'kinematic',
       },
       position: vec3.fromValues(0, -1, 0),
-      scale: vec3.fromValues(0.1, 0.05, 0.2),
+      scale,
       visible: false,
     });
-    mesh.physics.body = scene.physics.addBody(mesh.physics, mesh.position, mesh.rotation);
+    scene.physics.addBody(mesh);
     scene.meshes.unshift(mesh);
   }
 };

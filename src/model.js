@@ -50,19 +50,19 @@ class Model {
           this.index = GL.createBuffer();
           GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.index);
           GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, index, GL.STATIC_DRAW);
-          const hasAlbedo = this.shader.attribute('albedo') !== -1;
-          const stride = hasAlbedo ? 6 : 3;
+          const hasColor = this.shader.attribute('color') !== -1;
+          const stride = hasColor ? 6 : 3;
           GL.vertexAttribPointer(
             this.shader.attribute('position'), 3, GL.FLOAT, false,
             Float32Array.BYTES_PER_ELEMENT * stride, 0
           );
           GL.enableVertexAttribArray(this.shader.attribute('position'));
-          if (hasAlbedo) {
+          if (hasColor) {
             GL.vertexAttribPointer(
-              this.shader.attribute('albedo'), 3, GL.FLOAT, false,
+              this.shader.attribute('color'), 3, GL.FLOAT, false,
               Float32Array.BYTES_PER_ELEMENT * stride, Float32Array.BYTES_PER_ELEMENT * 3
             );
-            GL.enableVertexAttribArray(this.shader.attribute('albedo'));
+            GL.enableVertexAttribArray(this.shader.attribute('color'));
           }
         }
         break;
@@ -71,13 +71,21 @@ class Model {
 
     GL.extensions.VAO.bindVertexArrayOES(null);
   }
-  render(projection, view) {
+  render({
+    albedo,
+    view,
+    projection,
+  }) {
     const { renderer: { GL }, shader, type } = this;
 
     GL.useProgram(shader.program);
     GL.uniformMatrix4fv(shader.uniform('projection'), false, projection);
     GL.uniformMatrix4fv(shader.uniform('view'), false, view);
     GL.extensions.VAO.bindVertexArrayOES(this.VAO);
+
+    if (albedo && shader.uniform('albedo') !== false) {
+      GL.uniform3fv(shader.uniform('albedo'), albedo);
+    }
 
     switch (type) {
       case 'points':

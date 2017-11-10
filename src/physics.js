@@ -1,6 +1,13 @@
 import CANNON from 'cannon';
 
 class Physics {
+  static applyImpulse(body, impulse) {
+    body.applyImpulse(new CANNON.Vec3(
+      impulse[0],
+      impulse[1],
+      impulse[2],
+    ), new CANNON.Vec3(0, 0, 0));
+  }
   constructor() {
     const world = new CANNON.World();
     world.quatNormalizeSkip = 0;
@@ -15,11 +22,17 @@ class Physics {
     world.broadphase = new CANNON.NaiveBroadphase();
     world.broadphase.useBoundingBoxes = true;
     this.world = world;
+    this.ray = new CANNON.Ray();
     this.bodies = [];
+    this.constraints = [];
     this.shapes = [];
   }
-  addBody(physics, position, rotation) {
-    const { world } = this;
+  addBody({
+    physics,
+    position,
+    rotation,
+  }) {
+    const { bodies, world } = this;
     let type = physics.mass <= 0.0 ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC;
     switch (physics.type) {
       case 'dynamic':
@@ -60,8 +73,8 @@ class Physics {
     body.position.set(position[0], position[1], position[2]);
     body.quaternion.set(rotation[0], rotation[1], rotation[2], rotation[3]);
     world.addBody(body);
-    this.bodies.push(body);
-    return body;
+    bodies.push(body);
+    physics.body = body; // eslint-disable-line no-param-reassign
   }
   addConstraint({
     body,
@@ -69,7 +82,7 @@ class Physics {
     pivot,
     point,
   }) {
-    const { world } = this;
+    const { constraints, world } = this;
     const constraint = new CANNON.PointToPointConstraint(
       body,
       body.quaternion.inverse().vmult(new CANNON.Vec3(
@@ -85,6 +98,7 @@ class Physics {
       )
     );
     world.addConstraint(constraint);
+    constraints.push(constraint);
     return constraint;
   }
   getClosestBody({
@@ -92,14 +106,13 @@ class Physics {
     from,
     to,
   }) {
-    const { world } = this;
-    const ray = new CANNON.Ray(
-      new CANNON.Vec3(from[0], from[1], from[2]),
-      new CANNON.Vec3(to[0], to[1], to[2])
-    );
+    const { world, ray } = this;
     ray.intersectWorld(world, {
       collisionFilterMask: collisionFilterMask || 2,
+      from: new CANNON.Vec3(from[0], from[1], from[2]),
       mode: CANNON.Ray.CLOSEST,
+      skipBackfaces: true,
+      to: new CANNON.Vec3(to[0], to[1], to[2]),
     });
     return ray.result.hasHit ? ray.result : false;
   }
@@ -116,7 +129,12 @@ class Physics {
         case 'heightfield':
           shapes[id] = new CANNON.Heightfield(
             heightfield,
-            { elementSize: 2 }
+            { elementSize: extents[0] }
+          );
+          break;
+        case 'sphere':
+          shapes[id] = new CANNON.Sphere(
+            extents[0]
           );
           break;
         default:
@@ -124,9 +142,15 @@ class Physics {
     }
     return shapes[id];
   }
+  removeBody(body) {
+    const { bodies, world } = this;
+    world.removeBody(body);
+    bodies.splice(bodies.findIndex(b => (b === body)), 1);
+  }
   removeConstraint(constraint) {
-    const { world } = this;
+    const { constraints, world } = this;
     world.removeConstraint(constraint);
+    constraints.splice(constraints.findIndex(c => (c === constraint)), 1);
   }
   step(delta) {
     const { world } = this;

@@ -108,7 +108,7 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
-            loader: 'raw-loader',
+            loader: 'webpack-glsl-loader',
           },
         ],
       },
