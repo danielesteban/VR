@@ -75,8 +75,9 @@ class Model {
   }
   render({
     albedo,
-    view,
+    meshView,
     projection,
+    view,
   }) {
     const {
       normalView,
@@ -91,7 +92,7 @@ class Model {
     GL.extensions.VAO.bindVertexArrayOES(this.VAO);
 
     if (shader.uniform('normalView') !== false) {
-      mat3.normalFromMat4(normalView, view);
+      mat3.normalFromMat4(normalView, meshView);
       GL.uniformMatrix3fv(shader.uniform('normalView'), false, normalView);
     }
 

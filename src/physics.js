@@ -118,7 +118,7 @@ class Physics {
         case 'heightfield':
           shapes[id] = new CANNON.Heightfield(
             heightfield,
-            { elementSize: extents[0] }
+            { elementSize: 1 }
           );
           break;
         case 'sphere':
@@ -143,7 +143,7 @@ class Physics {
   }
   step(delta) {
     const { world } = this;
-    world.step(delta);
+    world.step(1 / 60, delta);
   }
 }
 

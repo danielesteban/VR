@@ -72,6 +72,7 @@ class Mesh {
     mat4.multiply(auxView, view, meshView);
     model.render({
       albedo,
+      meshView,
       projection,
       view: auxView,
     });

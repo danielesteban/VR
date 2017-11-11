@@ -9,7 +9,7 @@ class Playground extends Scene {
     {
       // Hovering cubes
       const count = 3;
-      const distance = 1.5;
+      const distance = 1.3;
       const step = (Math.PI * 2) / count;
       let offset = 0;
       const animateCube = (y, index) => (mesh, delta) => {
@@ -28,12 +28,12 @@ class Playground extends Scene {
           mesh.view, mesh.rotation, mesh.position, mesh.scale
         );
       };
-      for (let y = 0; y < 5; y += 1) {
+      for (let y = 0; y < 8; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            2 + y,
+            2 + (y * (y * 0.6)),
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -71,7 +71,7 @@ class Playground extends Scene {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            (distance / 2) + y,
+            10 + y,
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -130,7 +130,6 @@ class Playground extends Scene {
             -32, 0, 32
           ),
           physics: {
-            extents: [2],
             mass: 0,
             heightfield: model.heightfield,
             shape: 'heightfield',

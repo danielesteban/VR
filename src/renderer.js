@@ -130,7 +130,7 @@ class Renderer {
         mat4.multiply(eyeView, frameData.leftViewMatrix, camera.view);
         scene.render(camera.projection, eyeView);
       }
-      if (frameData.pose) {
+      if (frameData.pose.orientation && frameData.pose.position) {
         scene.setDisplay(frameData.pose);
       }
     } else {
