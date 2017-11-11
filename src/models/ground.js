@@ -17,14 +17,14 @@ const Ground = (() => {
     x: width / 2,
     y: length / 2,
   };
-  const summit = ((width + length) / 2) * 0.15;
+  const summit = ((width + length) / 2) * 0.25;
   for (let j = 0; j < numVertsY; j += 1) {
     for (let i = 0; i < numVertsX; i += 1) {
       const x = i;
       const y = j;
       const height = Math.sqrt(
         ((center.x - x) ** 2) + ((center.y - y) ** 2)
-      ) * 0.4;
+      ) * 0.55;
       const noise = (Math.random() - 0.5) * 0.5;
       const z = (height >= summit ? (summit * 2) - height : height) + noise;
       const vertex = (i + (j * numVertsX)) * 6;

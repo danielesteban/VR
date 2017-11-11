@@ -77,7 +77,7 @@ class Scene {
       physics.removeBody(sphere.physics.body);
       meshes.splice(meshes.findIndex(m => (m === sphere)), 1);
     }
-    const scale = vec3.fromValues(0.3, 0.3, 0.3);
+    const scale = vec3.fromValues(0.15, 0.15, 0.15);
     const mesh = new Mesh({
       albedo: vec3.fromValues(
         0.5 + (Math.random() * 0.5),
@@ -95,8 +95,8 @@ class Scene {
         )
       ),
       physics: {
-        extents: [scale[0] / 2],
-        mass: 3,
+        extents: scale,
+        mass: 2,
         shape: 'sphere',
       },
       scale,
@@ -105,7 +105,7 @@ class Scene {
     Physics.applyImpulse(mesh.physics.body, vec3.transformQuat(
       vec3.create(),
       vec3.fromValues(
-        0, 0, -40
+        0, 0, -50
       ),
       rotation
     ));

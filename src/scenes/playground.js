@@ -62,16 +62,16 @@ class Playground extends Scene {
 
     {
       // Cubes with physics
-      const count = 10;
+      const count = 16;
       const distance = 8;
       const step = (Math.PI * 2) / count;
-      const scale = vec3.fromValues(0.5, 0.5, 0.5);
-      for (let y = 0; y < 4; y += 1) {
+      const scale = vec3.fromValues(0.4, 0.4, 0.4);
+      for (let y = 0; y < 3; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            10 + y,
+            10 + i + y,
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
