@@ -2,6 +2,7 @@ import classNames from 'classnames/bind';
 import { glMatrix, mat4, vec3 } from 'gl-matrix';
 import requestAnimationFrame from 'raf';
 import Model from './model';
+import * as Scenes from './scenes';
 import Shader from './shader';
 import styles from './styles/renderer';
 
@@ -49,6 +50,8 @@ class Renderer {
     window.addEventListener('vrdisplaypresentchange', this.onPresentChange.bind(this), false);
     this.onPresentChange();
 
+    this.setScene(Object.keys(Scenes)[0]);
+
     this.onAnimationFrame = this.onAnimationFrame.bind(this);
     requestAnimationFrame(this.onAnimationFrame);
   }
@@ -62,6 +65,10 @@ class Renderer {
     const id = `${vertex}:${fragment}`;
     if (!shaders[id]) shaders[id] = new Shader(this, fragment, vertex);
     return shaders[id];
+  }
+  nextScene() {
+    const scenes = Object.keys(Scenes);
+    this.setScene(scenes[(this.sceneIndex + 1) % scenes.length]);
   }
   onAnimationFrame(ticks) {
     const {
@@ -77,10 +84,7 @@ class Renderer {
     const currentTicks = window.performance ? window.performance.now() : ticks;
     const delta = (currentTicks - (lastTicks || currentTicks)) / 1000;
     this.lastTicks = currentTicks;
-    if (!scene) {
-      requestAnimationFrame(this.onAnimationFrame);
-      return;
-    }
+
     const controllers = [];
     if (navigator.getGamepads) {
       const gamepads = navigator.getGamepads();
@@ -94,6 +98,20 @@ class Renderer {
         }
       }
     }
+
+    if (
+      controllers[0] &&
+      controllers[0].buttons[3] &&
+      controllers[0].buttons[3].pressed
+    ) {
+      if (!this.settingScene) {
+        this.settingScene = true;
+        this.nextScene();
+      }
+    } else if (this.settingScene) {
+      this.settingScene = false;
+    }
+
     scene.animate(delta, controllers);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
     if (display) {
@@ -112,7 +130,9 @@ class Renderer {
         mat4.multiply(eyeView, frameData.leftViewMatrix, camera.view);
         scene.render(camera.projection, eyeView);
       }
-      scene.setDisplay(frameData.pose);
+      if (frameData.pose) {
+        scene.setDisplay(frameData.pose);
+      }
     } else {
       requestAnimationFrame(this.onAnimationFrame);
       GL.viewport(0, 0, canvas.width, canvas.height);
@@ -175,8 +195,8 @@ class Renderer {
     this.frameData = new window.VRFrameData();
   }
   setScene(scene) {
-    scene.init(this);
-    this.scene = scene;
+    this.scene = new Scenes[scene](this);
+    this.sceneIndex = Object.keys(Scenes).indexOf(scene);
   }
 }
 

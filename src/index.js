@@ -1,40 +1,41 @@
 import Message from './message';
 import Renderer from './renderer';
-import { Playground } from './scenes';
 import './styles/root';
 
-const initVR = () => (
-  new Promise((resolve, reject) => {
+const initVR = () => {
+  const noSupport = 'Your browser does not support WebVR. See webvr.info for assistance.';
+  const noDisplay = 'Couldn\'t find any VRDisplay.';
+  return new Promise((resolve, reject) => {
     if (!navigator.getVRDisplays) {
       return reject(
-        new Error('Your browser does not support WebVR. See webvr.info for assistance.')
+        new Error(noSupport)
       );
     }
     return navigator.getVRDisplays().then((displays) => {
       if (displays.length === 0) {
         return reject(
-          new Error('WebVR supported, but no VRDisplays found.')
+          new Error(noDisplay)
         );
       }
       const vrDisplay = displays[displays.length - 1];
       if (!vrDisplay.capabilities.canPresent) {
         return reject(
-          new Error('WebVR supported, but no compatible VRDisplays found.')
+          new Error(noDisplay)
         );
       }
       return resolve(vrDisplay);
     }, () => (
       reject(
-        new Error('Your browser does not support WebVR. See webvr.info for assistance.')
+        new Error(noSupport)
       )
     ));
-  })
-);
+  });
+};
 
 const mount = document.getElementById('mount');
 const message = new Message(mount);
 const renderer = new Renderer({ message, mount });
-renderer.setScene(new Playground());
+
 initVR().then(
   display => renderer.setDisplay(display),
   err => message.update(err.message)

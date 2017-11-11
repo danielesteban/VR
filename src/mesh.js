@@ -17,8 +17,8 @@ class Mesh {
     this.model = model;
     this.onAnimate = onAnimate;
     this.physics = physics;
-    this.position = position || vec3.create();
-    this.rotation = rotation || quat.create();
+    this.position = position ? vec3.clone(position) : vec3.create();
+    this.rotation = rotation ? quat.clone(rotation) : quat.create();
     if (scale) {
       this.scale = scale;
       this.view = mat4.fromRotationTranslationScale(

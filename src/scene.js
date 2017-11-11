@@ -4,7 +4,7 @@ import Mesh from './mesh';
 import Physics from './physics';
 
 class Scene {
-  init({
+  constructor({
     controllers,
     meshes,
     renderer,
@@ -29,11 +29,35 @@ class Scene {
         this.physics.addBody(mesh);
       }
     });
+    {
+      const animateStarfield = direction => (mesh, delta) => {
+        mat4.rotate(
+          mesh.view, mesh.view,
+          delta / 500,
+          direction,
+        );
+      };
+      meshes.push(
+        new Mesh({
+          model: renderer.getModel('Starfield'),
+          onAnimate: animateStarfield(
+            vec3.fromValues(Math.random() - 1, Math.random() - 1, Math.random() - 1)
+          ),
+        })
+      );
+    }
     Controllers[controllers || 'default'](this);
   }
   animate(delta, controllers) {
     const { meshes, physics } = this;
     physics.step(delta);
+    if (
+      controllers[1] &&
+      controllers[1].buttons[3] &&
+      controllers[1].buttons[3].pressed
+    ) {
+      this.reset();
+    }
     meshes.forEach(mesh => (
       mesh.animate(delta, controllers)
     ));
@@ -81,7 +105,7 @@ class Scene {
     Physics.applyImpulse(mesh.physics.body, vec3.transformQuat(
       vec3.create(),
       vec3.fromValues(
-        0, 0, -64
+        0, 0, -40
       ),
       rotation
     ));
@@ -89,11 +113,32 @@ class Scene {
     meshes.push(mesh);
   }
   render(projection, view) {
-    const { auxView, stage: { view: stageView } } = this;
+    const { auxView, meshes, stage: { view: stageView } } = this;
     mat4.multiply(auxView, view, stageView);
-    this.meshes.forEach(mesh => (
+    meshes.forEach(mesh => (
       mesh.render(projection, auxView)
     ));
+  }
+  reset() {
+    const { meshes, physics, spheres } = this;
+    spheres.forEach((sphere) => {
+      physics.removeBody(sphere.physics.body);
+      meshes.splice(meshes.findIndex(m => (m === sphere)), 1);
+    });
+    spheres.length = 0;
+    meshes.forEach((mesh) => {
+      if (mesh.physics) {
+        const { physics: { body } } = mesh;
+        body.position.copy(body.initPosition);
+        body.previousPosition.copy(body.position);
+        body.interpolatedPosition.copy(body.position);
+        body.quaternion.copy(body.initQuaternion);
+        body.previousQuaternion.copy(body.quaternion);
+        body.interpolatedQuaternion.copy(body.quaternion);
+        body.velocity.copy(body.initVelocity);
+        body.angularVelocity.copy(body.angularVelocity);
+      }
+    });
   }
   setDisplay(pose) {
     const { display } = this;

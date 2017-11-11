@@ -9,23 +9,12 @@ class Physics {
     ), new CANNON.Vec3(0, 0, 0));
   }
   constructor() {
-    const world = new CANNON.World();
-    world.quatNormalizeSkip = 0;
-    world.quatNormalizeFast = false;
-    const solver = new CANNON.GSSolver();
-    world.defaultContactMaterial.contactEquationStiffness = 1e9;
-    world.defaultContactMaterial.contactEquationRelaxation = 4;
-    solver.iterations = 7;
-    solver.tolerance = 0.1;
-    world.solver = new CANNON.SplitSolver(solver);
-    world.gravity.set(0, -10, 0);
-    world.broadphase = new CANNON.NaiveBroadphase();
-    world.broadphase.useBoundingBoxes = true;
-    this.world = world;
-    this.ray = new CANNON.Ray();
     this.bodies = [];
     this.constraints = [];
+    this.ray = new CANNON.Ray();
     this.shapes = [];
+    this.world = new CANNON.World();
+    this.world.gravity.set(0, -9.8, 0);
   }
   addBody({
     physics,
@@ -67,9 +56,9 @@ class Physics {
       collisionFilterGroup,
       collisionFilterMask,
       mass: physics.mass,
+      shape: this.getShape(physics),
       type,
     });
-    body.addShape(this.getShape(physics));
     body.position.set(position[0], position[1], position[2]);
     body.quaternion.set(rotation[0], rotation[1], rotation[2], rotation[3]);
     world.addBody(body);

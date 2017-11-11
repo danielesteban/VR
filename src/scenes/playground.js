@@ -3,7 +3,7 @@ import Mesh from '../mesh';
 import Scene from '../scene';
 
 class Playground extends Scene {
-  init(renderer) {
+  constructor(renderer) {
     const meshes = [];
 
     {
@@ -140,26 +140,7 @@ class Playground extends Scene {
       );
     }
 
-    {
-      // A starfield
-      const animateStarfield = direction => (mesh, delta) => {
-        mat4.rotate(
-          mesh.view, mesh.view,
-          delta / 500,
-          direction,
-        );
-      };
-      meshes.push(
-        new Mesh({
-          model: renderer.getModel('Starfield'),
-          onAnimate: animateStarfield(
-            vec3.fromValues(Math.random() - 1, Math.random() - 1, Math.random() - 1)
-          ),
-        })
-      );
-    }
-
-    super.init({
+    super({
       meshes,
       renderer,
       stagePosition: vec3.fromValues(0, 1.75, 0),
