@@ -8,7 +8,7 @@ class Playground extends Scene {
 
     {
       // Hovering cubes
-      const count = 3;
+      const count = 5;
       const distance = 1.3;
       const step = (Math.PI * 2) / count;
       let offset = 0;
@@ -28,12 +28,12 @@ class Playground extends Scene {
           mesh.view, mesh.rotation, mesh.position, mesh.scale
         );
       };
-      for (let y = 0; y < 8; y += 1) {
+      for (let y = 0; y < 6; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            2 + (y * (y * 0.6)),
+            1.5 + (i * 0.5) + (y * 1.5),
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(

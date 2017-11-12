@@ -1,3 +1,4 @@
+import Github from './github';
 import Message from './message';
 import Renderer from './renderer';
 import './styles/root';
@@ -35,7 +36,7 @@ const initVR = () => {
 const mount = document.getElementById('mount');
 const message = new Message(mount);
 const renderer = new Renderer({ message, mount });
-
+Github(mount);
 initVR().then(
   display => renderer.setDisplay(display),
   err => message.update(err.message)
