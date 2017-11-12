@@ -17,7 +17,7 @@ const Marker = {
      0.25,  0.001,  0.0,        0, 1, 0,
      0.10,  0.001, -0.075,      0, 1, 0,
   ]),
-  index: new Uint32Array([
+  index: new Uint8Array([
      0,  1,  2,
      3,  4,  5,
      6,  7,  8,

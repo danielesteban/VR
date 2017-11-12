@@ -50,6 +50,13 @@ class Model {
         {
           this.count = index.length;
           this.index = GL.createBuffer();
+          if (index instanceof Uint8Array) {
+            this.indexType = GL.UNSIGNED_BYTE;
+          } else if (index instanceof Uint16Array) {
+            this.indexType = GL.UNSIGNED_SHORT;
+          } else if (index instanceof Uint32Array) {
+            this.indexType = GL.UNSIGNED_INT;
+          }
           GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.index);
           GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, index, GL.STATIC_DRAW);
           const hasNormal = this.shader.attribute('normal') !== -1;
@@ -107,7 +114,7 @@ class Model {
         GL.disable(GL.BLEND);
         break;
       case 'triangles':
-        GL.drawElements(GL.TRIANGLES, this.count, GL.UNSIGNED_INT, 0);
+        GL.drawElements(GL.TRIANGLES, this.count, this.indexType, 0);
         break;
       default:
     }

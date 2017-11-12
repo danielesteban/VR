@@ -11,7 +11,7 @@ const Ground = (() => {
 
   const vertices = new Float32Array(totalVerts * 6);
   const heightfield = [];
-  const index = new Uint32Array(totalTriangles * 3);
+  const index = new Uint16Array(totalTriangles * 3);
 
   const center = {
     x: width / 2,
