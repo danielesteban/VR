@@ -9,7 +9,7 @@ class Playground extends Scene {
     {
       // Hovering cubes
       const count = 5;
-      const distance = 1.3;
+      const distance = 1.5;
       const step = (Math.PI * 2) / count;
       let offset = 0;
       const animateCube = (y, index) => (mesh, delta) => {
@@ -33,7 +33,7 @@ class Playground extends Scene {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            1.5 + (i * 0.5) + (y * 1.5),
+            2 + (i / 2) + (y * 4),
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -53,7 +53,7 @@ class Playground extends Scene {
               onAnimate: animateCube(y, i),
               position,
               rotation,
-              scale: vec3.fromValues(0.1, 0.1, 0.1),
+              scale: vec3.fromValues(0.15, 0.15, 0.15),
             })
           );
         }
@@ -62,43 +62,38 @@ class Playground extends Scene {
 
     {
       // Cubes with physics
-      const count = 8;
-      const distance = 5;
-      const step = (Math.PI * 2) / count;
+      const count = 32;
       const scale = vec3.fromValues(0.25, 0.25, 0.25);
-      for (let y = 0; y < 3; y += 1) {
-        for (let i = 0; i < count; i += 1) {
-          const angle = i * step;
-          const position = vec3.fromValues(
-            Math.cos(angle) * distance,
-            5 + i + y,
-            Math.sin(angle) * distance
-          );
-          const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
-            (Math.random() * 2) - 1,
-            (Math.random() * 2) - 1,
-            (Math.random() * 2) - 1
-          ), Math.random() * Math.PI);
-          quat.normalize(rotation, rotation);
-          meshes.push(
-            new Mesh({
-              albedo: vec3.fromValues(
-                0.5 + (Math.random() * 0.5),
-                0.5 + (Math.random() * 0.5),
-                0.5 + (Math.random() * 0.5)
-              ),
-              model: renderer.getModel('Cube'),
-              physics: {
-                shape: 'box',
-                extents: scale,
-                mass: 1,
-              },
-              position,
-              rotation,
-              scale,
-            })
-          );
-        }
+      for (let i = 0; i < count; i += 1) {
+        const position = vec3.fromValues(
+          (Math.random() * 16) - 8,
+          8 + i,
+          (Math.random() * 16) - 8
+        );
+        const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
+          (Math.random() * 2) - 1,
+          (Math.random() * 2) - 1,
+          (Math.random() * 2) - 1
+        ), Math.random() * Math.PI);
+        quat.normalize(rotation, rotation);
+        meshes.push(
+          new Mesh({
+            albedo: vec3.fromValues(
+              0.5 + (Math.random() * 0.5),
+              0.5 + (Math.random() * 0.5),
+              0.5 + (Math.random() * 0.5)
+            ),
+            model: renderer.getModel('Cube'),
+            physics: {
+              shape: 'box',
+              extents: scale,
+              mass: 1,
+            },
+            position,
+            rotation,
+            scale,
+          })
+        );
       }
     }
 
