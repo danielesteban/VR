@@ -1,107 +1,36 @@
-import { glMatrix, mat4, quat, vec3 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 import Mesh from '../mesh';
+import Translocation from './translocation';
 
-const Gun = 0;
-
-const DefaultControllers = (scene) => {
-  const markers = [];
-  for (let i = 0; i < 2; i += 1) {
-    const marker = new Mesh({
-      albedo: vec3.fromValues(0, 0.094, 0.282),
-      model: scene.renderer.getModel('Marker'),
-      position: vec3.create(),
-      visible: false,
-    });
-    markers.push(marker);
-    scene.meshes.unshift(marker);
-  }
-  const firing = [];
+const Hands = (scene) => {
   const constraints = [];
+  const translocation = Translocation(scene);
   const animateController = controller => (
     (mesh, delta, controllers) => {
       if (controllers[controller]) {
         // Update controller pose
         const { buttons, pose } = controllers[controller];
         const { position, rotation } = scene.transformPose(pose);
-        if (controller === Gun) {
-          quat.rotateX(
-            rotation,
-            rotation,
-            glMatrix.toRadian(-75)
-          );
-        }
         /* eslint-disable no-param-reassign */
         mesh.position = position;
         mesh.rotation = rotation;
         /* eslint-enable no-param-reassign */
         mesh.physics.body.quaternion.set(rotation[0], rotation[1], rotation[2], rotation[3]);
         mesh.physics.body.position.set(position[0], position[1], position[2]);
-        if (mesh.scale) {
-          mat4.fromRotationTranslationScale(mesh.view, rotation, position, mesh.scale);
-        } else {
-          mat4.fromRotationTranslation(mesh.view, rotation, position);
-        }
+        mat4.fromRotationTranslationScale(mesh.view, rotation, position, mesh.scale);
         mesh.setVisible(true);
 
         // Translocation
-        const marker = markers[controller];
-        if (buttons[0].pressed) {
-          const point = scene.physics.getClosestBody({
-            collisionFilterMask: 1,
-            from: position,
-            to: vec3.scaleAndAdd(vec3.create(), position, vec3.transformQuat(
-              vec3.create(),
-              vec3.fromValues(0, 0, -1),
-              rotation
-            ), 8),
-          });
-          if (point) {
-            quat.rotationTo(
-              marker.rotation,
-              vec3.fromValues(
-                point.hitNormalWorld.x,
-                point.hitNormalWorld.y,
-                point.hitNormalWorld.z
-              ),
-              vec3.fromValues(0, 1, 0)
-            );
-            quat.invert(marker.rotation, marker.rotation);
-            vec3.add(marker.position, vec3.fromValues(
-              point.hitPointWorld.x,
-              point.hitPointWorld.y,
-              point.hitPointWorld.z
-            ), vec3.transformQuat(
-              vec3.create(),
-              vec3.fromValues(0, 0.1, 0),
-              marker.rotation
-            ));
-            mat4.fromRotationTranslation(
-              marker.view,
-              marker.rotation,
-              marker.position
-            );
-            marker.setVisible(true);
-          } else {
-            marker.setVisible(false);
-          }
-        } else if (marker.isVisible) {
-          scene.setStagePosition(marker.position);
-          marker.setVisible(false);
-        }
-
-        // Firing
-        if (controller === Gun && buttons[1].pressed) {
-          if (!firing[controller]) {
-            firing[controller] = true;
-            scene.onFire({ position, rotation });
-          }
-        } else if (firing[controller]) {
-          firing[controller] = false;
-        }
+        translocation({
+          button: buttons[0],
+          controller,
+          position,
+          rotation,
+        });
 
         // Picking objects
         const picking = constraints[controller];
-        if (controller !== Gun && buttons[1].pressed) {
+        if (buttons[1].pressed) {
           if (picking) {
             picking.update();
           } else {
@@ -162,7 +91,7 @@ const DefaultControllers = (scene) => {
   for (let i = 0; i < 2; i += 1) {
     const mesh = new Mesh({
       albedo: vec3.fromValues(0.3, 0.3, 0.3),
-      model: scene.renderer.getModel(i === Gun ? 'Gun' : 'Cube'),
+      model: scene.renderer.getModel('Cube'),
       onAnimate: animateController(i),
       physics: {
         collisionFilterGroup: 0,
@@ -173,7 +102,7 @@ const DefaultControllers = (scene) => {
         type: 'kinematic',
       },
       position: vec3.fromValues(0, -1, 0),
-      scale: i === Gun ? undefined : vec3.fromValues(0.05, 0.025, 0.1),
+      scale: vec3.fromValues(0.05, 0.025, 0.1),
       visible: false,
     });
     scene.physics.addBody(mesh);
@@ -181,4 +110,4 @@ const DefaultControllers = (scene) => {
   }
 };
 
-export default DefaultControllers;
+export default Hands;

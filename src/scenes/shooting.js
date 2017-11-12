@@ -1,4 +1,4 @@
-import { vec3 } from 'gl-matrix';
+import { quat, vec3 } from 'gl-matrix';
 import Mesh from '../mesh';
 import Scene from '../scene';
 
@@ -8,15 +8,28 @@ class Shooting extends Scene {
 
     {
       // Cubes with physics
-      const width = 6;
+      const count = 8;
+      const distance = 5;
+      const step = (Math.PI * 2) / count;
       const cubeScale = vec3.fromValues(0.5, 0.5, 0.5);
       const platformScale = vec3.fromValues(1.0, 0.6, 0.5);
-      for (let x = 0; x < width; x += 1) {
+      for (let i = 0; i < count; i += 1) {
+        const angle = i * step;
         const position = vec3.fromValues(
-          (x * 2) - width,
+          Math.cos(angle) * distance,
           2,
-          -5,
+          Math.sin(angle) * distance
         );
+        const rotation = quat.rotationTo(
+          quat.create(),
+          vec3.fromValues(
+            Math.cos(angle),
+            0,
+            Math.sin(angle)
+          ),
+          vec3.fromValues(0, 0, -1)
+        );
+        quat.invert(rotation, rotation);
         meshes.push(
           new Mesh({
             albedo: vec3.fromValues(
@@ -31,6 +44,7 @@ class Shooting extends Scene {
               mass: 0,
             },
             position,
+            rotation,
             scale: platformScale,
           })
         );
@@ -50,6 +64,7 @@ class Shooting extends Scene {
                 mass: 1.0,
               },
               position,
+              rotation,
               scale: cubeScale,
             })
           );
@@ -76,6 +91,7 @@ class Shooting extends Scene {
     }
 
     super({
+      controllers: 'Guns',
       meshes,
       renderer,
       stagePosition: vec3.fromValues(0, 1.75, 0),

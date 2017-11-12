@@ -46,7 +46,7 @@ class Scene {
         })
       );
     }
-    Controllers[controllers || 'default'](this);
+    Controllers[controllers || 'Hands'](this);
   }
   animate(delta, controllers) {
     const { meshes, physics } = this;

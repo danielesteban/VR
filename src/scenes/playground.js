@@ -62,16 +62,16 @@ class Playground extends Scene {
 
     {
       // Cubes with physics
-      const count = 16;
-      const distance = 8;
+      const count = 8;
+      const distance = 5;
       const step = (Math.PI * 2) / count;
-      const scale = vec3.fromValues(0.4, 0.4, 0.4);
+      const scale = vec3.fromValues(0.25, 0.25, 0.25);
       for (let y = 0; y < 3; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
           const position = vec3.fromValues(
             Math.cos(angle) * distance,
-            10 + i + y,
+            5 + i + y,
             Math.sin(angle) * distance
           );
           const rotation = quat.setAxisAngle(quat.create(), vec3.fromValues(
@@ -91,7 +91,7 @@ class Playground extends Scene {
               physics: {
                 shape: 'box',
                 extents: scale,
-                mass: 1.5,
+                mass: 1,
               },
               position,
               rotation,
@@ -104,17 +104,32 @@ class Playground extends Scene {
 
     {
       // Main platform
-      const scale = vec3.fromValues(3, 0.25, 3);
+      let glow = 1;
+      let glowInc = 1;
+      const onAnimate = (mesh, delta) => {
+        glow += delta * glowInc * 0.1;
+        if (glow <= 0.6) {
+          glow = 0.6;
+          glowInc *= -1;
+        }
+        if (glow >= 1) {
+          glow = 1;
+          glowInc *= -1;
+        }
+        vec3.set(mesh.albedo, 0.282 * glow, 0.11 * glow, 0);
+      };
+      const scale = vec3.fromValues(6, 3, 6);
       meshes.push(
         new Mesh({
-          albedo: vec3.fromValues(0.3, 0, 0.1),
+          albedo: vec3.fromValues(0.282, 0.11, 0),
           model: renderer.getModel('Cube'),
+          onAnimate,
           physics: {
             mass: 0,
             extents: scale,
             shape: 'box',
           },
-          position: vec3.fromValues(0, 1.5, 0),
+          position: vec3.fromValues(0, 0, 0),
           scale,
         })
       );
@@ -142,7 +157,7 @@ class Playground extends Scene {
     super({
       meshes,
       renderer,
-      stagePosition: vec3.fromValues(0, 1.75, 0),
+      stagePosition: vec3.fromValues(0, 1.5, 0),
     });
   }
 }
