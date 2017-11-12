@@ -11,10 +11,8 @@ const Hands = (scene) => {
         // Update controller pose
         const { buttons, pose } = controllers[controller];
         const { position, rotation } = scene.transformPose(pose);
-        /* eslint-disable no-param-reassign */
-        mesh.position = position;
-        mesh.rotation = rotation;
-        /* eslint-enable no-param-reassign */
+        vec3.copy(mesh.position, position);
+        vec3.copy(mesh.rotation, rotation);
         mesh.physics.body.quaternion.set(rotation[0], rotation[1], rotation[2], rotation[3]);
         mesh.physics.body.position.set(position[0], position[1], position[2]);
         mat4.fromRotationTranslationScale(mesh.view, rotation, position, mesh.scale);

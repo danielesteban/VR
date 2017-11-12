@@ -16,10 +16,8 @@ const Guns = (scene) => {
           rotation,
           glMatrix.toRadian(-75)
         );
-        /* eslint-disable no-param-reassign */
-        mesh.position = position;
-        mesh.rotation = rotation;
-        /* eslint-enable no-param-reassign */
+        vec3.copy(mesh.position, position);
+        vec3.copy(mesh.rotation, rotation);
         mat4.fromRotationTranslation(mesh.view, rotation, position);
         mesh.setVisible(true);
 
