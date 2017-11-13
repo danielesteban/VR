@@ -1,4 +1,5 @@
 export { default as Cube } from './cube';
+export { default as Framebuffer } from './framebuffer';
 export { default as Ground } from './ground';
 export { default as Gun } from './gun';
 export { default as Marker } from './marker';

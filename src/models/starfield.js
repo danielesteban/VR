@@ -12,15 +12,13 @@ const Starfield = {
         (Math.random() * 2) - 1
       );
       vec3.scale(pos, pos, radius * (0.75 + (Math.random() * 0.25)));
-      const vertex = i * 5;
+      const vertex = i * 4;
       const [x, y, z] = pos;
-      const size = 1 + (Math.random() * 0.25 * window.devicePixelRatio);
-      const alpha = 0.2 + (Math.random() * 0.6);
+      const alpha = 0.1 + (Math.random() * 0.3);
       vertices[vertex] = x;
       vertices[vertex + 1] = y;
       vertices[vertex + 2] = z;
-      vertices[vertex + 3] = size;
-      vertices[vertex + 4] = alpha;
+      vertices[vertex + 3] = alpha;
     }
     return vertices;
   })(),

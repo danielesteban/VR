@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
-import { glMatrix, mat4, vec3 } from 'gl-matrix';
+import { glMatrix, mat4, vec2, vec3 } from 'gl-matrix';
 import requestAnimationFrame from 'raf';
+import Framebuffer from './framebuffer';
 import Model from './model';
 import * as Scenes from './scenes';
 import Shader from './shader';
@@ -18,7 +19,8 @@ class Renderer {
     canvas.addEventListener('click', this.requestPresent.bind(this), false);
     mount.appendChild(canvas);
 
-    const GL = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const hints = { alpha: false, antialias: false, preserveDrawingBuffer: false };
+    const GL = canvas.getContext('webgl', hints) || canvas.getContext('experimental-webgl', hints);
     GL.clearColor(0, 0.094, 0.282, 1);
     GL.enable(GL.DEPTH_TEST);
     GL.enable(GL.CULL_FACE);
@@ -76,6 +78,7 @@ class Renderer {
       canvas,
       display,
       eyeView,
+      framebuffer,
       GL,
       frameData,
       lastTicks,
@@ -113,6 +116,7 @@ class Renderer {
     }
 
     scene.animate(delta, controllers);
+    GL.bindFramebuffer(GL.FRAMEBUFFER, this.framebuffer.buffer);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
     if (display) {
       display.requestAnimationFrame(this.onAnimationFrame);
@@ -124,7 +128,6 @@ class Renderer {
         GL.viewport(canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height);
         mat4.multiply(eyeView, frameData.rightViewMatrix, camera.view);
         scene.render(frameData.rightProjectionMatrix, eyeView);
-        display.submitFrame();
       } else {
         GL.viewport(0, 0, canvas.width, canvas.height);
         mat4.multiply(eyeView, frameData.leftViewMatrix, camera.view);
@@ -137,6 +140,18 @@ class Renderer {
       requestAnimationFrame(this.onAnimationFrame);
       GL.viewport(0, 0, canvas.width, canvas.height);
       scene.render(camera.projection, camera.view);
+    }
+    GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+    GL.disable(GL.DEPTH_TEST);
+    GL.viewport(0, 0, canvas.width, canvas.height);
+    this.getModel('Framebuffer').render({
+      size: vec2.fromValues(canvas.width, canvas.height),
+      texture: framebuffer.texture,
+    });
+    GL.bindTexture(GL.TEXTURE_2D, null);
+    GL.enable(GL.DEPTH_TEST);
+    if (display && display.isPresenting) {
+      display.submitFrame();
     }
   }
   onPresentChange() {
@@ -153,7 +168,12 @@ class Renderer {
     this.onResize();
   }
   onResize() {
-    const { camera: { view }, canvas, display } = this;
+    const {
+      camera: { view },
+      canvas,
+      display,
+      framebuffer,
+    } = this;
     if (display && display.isPresenting) {
       const leftEye = display.getEyeParameters('left');
       const rightEye = display.getEyeParameters('right');
@@ -176,6 +196,8 @@ class Renderer {
       mat4.translate(view, view, vec3.fromValues(0, 1.62, 0));
       mat4.invert(view, view);
     }
+    if (framebuffer) framebuffer.destroy();
+    this.framebuffer = new Framebuffer(this);
   }
   requestPresent() {
     if (!this.display || this.display.isPresenting) return;
