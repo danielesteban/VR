@@ -39,6 +39,7 @@ class Scene {
       };
       meshes.push(
         new Mesh({
+          blending: true,
           model: renderer.getModel('Starfield'),
           onAnimate: animateStarfield(
             vec3.fromValues(Math.random() - 1, Math.random() - 1, Math.random() - 1)
@@ -47,6 +48,9 @@ class Scene {
       );
     }
     Controllers[controllers || 'Hands'](this);
+    meshes.sort(({ blending: a }, { blending: b }) => (
+      (a ? 1 : 0) - (b ? 1 : 0)
+    ));
   }
   animate(delta, controllers) {
     const { meshes, physics } = this;

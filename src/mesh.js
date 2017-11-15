@@ -3,16 +3,19 @@ import { mat4, quat, vec3 } from 'gl-matrix';
 class Mesh {
   constructor({
     albedo,
+    blending,
     model,
     onAnimate,
     physics,
     position,
     rotation,
     scale,
+    texture,
     visible,
   }) {
     this.albedo = albedo;
     this.auxView = mat4.create();
+    this.blending = !!blending;
     this.isVisible = visible !== undefined ? visible : true;
     this.model = model;
     this.onAnimate = onAnimate;
@@ -34,6 +37,7 @@ class Mesh {
         this.position
       );
     }
+    this.texture = texture;
   }
   animate(delta, controllers) {
     const { physics, onAnimate, scale } = this;
@@ -64,16 +68,20 @@ class Mesh {
     const {
       albedo,
       auxView,
+      blending,
       isVisible,
       model,
+      texture,
       view: meshView,
     } = this;
     if (!isVisible) return;
     mat4.multiply(auxView, view, meshView);
     model.render({
       albedo,
+      blending,
       meshView,
       projection,
+      texture,
       view: auxView,
     });
   }

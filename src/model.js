@@ -55,18 +55,31 @@ class Model {
           GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.index);
           GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, index, GL.STATIC_DRAW);
           const hasNormal = this.shader.attribute('normal') !== -1;
-          const stride = hasNormal ? 6 : 3;
+          const hasUV = this.shader.attribute('uv') !== -1;
+          let stride = 3;
+          if (hasNormal) stride += 3;
+          if (hasUV) stride += 2;
           GL.vertexAttribPointer(
             this.shader.attribute('position'), 3, GL.FLOAT, false,
-            Float32Array.BYTES_PER_ELEMENT * stride, 0
+            Float32Array.BYTES_PER_ELEMENT * stride,
+            0
           );
           GL.enableVertexAttribArray(this.shader.attribute('position'));
           if (hasNormal) {
             GL.vertexAttribPointer(
               this.shader.attribute('normal'), 3, GL.FLOAT, false,
-              Float32Array.BYTES_PER_ELEMENT * stride, Float32Array.BYTES_PER_ELEMENT * 3
+              Float32Array.BYTES_PER_ELEMENT * stride,
+              Float32Array.BYTES_PER_ELEMENT * 3
             );
             GL.enableVertexAttribArray(this.shader.attribute('normal'));
+          }
+          if (hasUV) {
+            GL.vertexAttribPointer(
+              this.shader.attribute('uv'), 2, GL.FLOAT, false,
+              Float32Array.BYTES_PER_ELEMENT * stride,
+              Float32Array.BYTES_PER_ELEMENT * (hasNormal ? 6 : 3)
+            );
+            GL.enableVertexAttribArray(this.shader.attribute('uv'));
           }
         }
         break;
@@ -77,6 +90,7 @@ class Model {
   }
   render({
     albedo,
+    blending,
     meshView,
     projection,
     size,
@@ -116,17 +130,17 @@ class Model {
       GL.uniform3fv(shader.uniform('albedo'), albedo);
     }
 
+    if (blending) GL.enable(GL.BLEND);
     switch (type) {
       case 'points':
-        GL.enable(GL.BLEND);
         GL.drawArrays(GL.POINTS, 0, this.count);
-        GL.disable(GL.BLEND);
         break;
       case 'triangles':
         GL.drawElements(GL.TRIANGLES, this.count, this.indexType, 0);
         break;
       default:
     }
+    if (blending) GL.disable(GL.BLEND);
 
     GL.extensions.VAO.bindVertexArrayOES(null);
   }

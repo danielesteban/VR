@@ -27,7 +27,6 @@ class Framebuffer {
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
     GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, this.texture, 0);
-    GL.bindTexture(GL.TEXTURE_2D, null);
 
     /* Render buffer */
     this.renderbuffer = GL.createRenderbuffer();

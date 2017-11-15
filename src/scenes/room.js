@@ -6,12 +6,12 @@ class Room extends Scene {
   constructor(renderer) {
     const meshes = [];
 
+    const distance = 10;
     {
       // Walls
       const count = 30;
-      const distance = 10;
       const step = (Math.PI * 2) / count;
-      const wallScale = vec3.fromValues(2, 1.2, 1);
+      const scale = vec3.fromValues(2, 1.2, 1);
       for (let y = 0; y < 2; y += 1) {
         for (let i = 0; i < count; i += 1) {
           const angle = i * step;
@@ -41,17 +41,20 @@ class Room extends Scene {
               physics: {
                 mass: 0,
                 shape: 'box',
-                extents: wallScale,
+                extents: scale,
               },
               position,
               rotation,
-              scale: wallScale,
+              scale,
             })
           );
         }
       }
+    }
+
+    {
       // Main platform
-      const platformScale = vec3.fromValues(distance * 2, 1, distance * 2);
+      const scale = vec3.fromValues(distance * 2, 1, distance * 2);
       for (let y = 0; y < 2; y += 1) {
         meshes.push(
           new Mesh({
@@ -63,18 +66,17 @@ class Room extends Scene {
             model: renderer.getModel('Cube'),
             physics: {
               mass: 0,
-              extents: platformScale,
+              extents: scale,
               shape: 'box',
             },
             position: vec3.fromValues(0, y === 0 ? -0.5 : 3.7, 0),
-            scale: platformScale,
+            scale,
           })
         );
       }
     }
 
     super({
-      controllers: 'Guns',
       meshes,
       renderer,
     });

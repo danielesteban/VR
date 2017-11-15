@@ -5,6 +5,7 @@ import Framebuffer from './framebuffer';
 import Model from './model';
 import * as Scenes from './scenes';
 import Shader from './shader';
+import Texturebuffer from './texturebuffer';
 import styles from './styles/renderer';
 
 const cx = classNames.bind(styles);
@@ -44,6 +45,7 @@ class Renderer {
     this.message = message;
     this.models = {};
     this.shaders = {};
+    this.textures = {};
 
     window.addEventListener('keydown', ({ repeat }) => {
       if (!repeat) this.requestPresent();
@@ -67,6 +69,11 @@ class Renderer {
     const id = `${vertex}:${fragment}`;
     if (!shaders[id]) shaders[id] = new Shader(this, fragment, vertex);
     return shaders[id];
+  }
+  getTexture(id, width, height) {
+    const { textures } = this;
+    if (!textures[id]) textures[id] = new Texturebuffer(this, width, height);
+    return textures[id];
   }
   nextScene() {
     const scenes = Object.keys(Scenes);
@@ -148,7 +155,6 @@ class Renderer {
       size: vec2.fromValues(canvas.width, canvas.height),
       texture: framebuffer.texture,
     });
-    GL.bindTexture(GL.TEXTURE_2D, null);
     GL.enable(GL.DEPTH_TEST);
     if (display && display.isPresenting) {
       display.submitFrame();
