@@ -15,12 +15,9 @@ class Texturebuffer {
       GL.TEXTURE_2D,
       0,
       GL.RGBA,
-      width,
-      height,
-      0,
       GL.RGBA,
       GL.UNSIGNED_BYTE,
-      null
+      this.canvas
     );
 
     this.renderer = renderer;

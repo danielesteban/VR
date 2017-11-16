@@ -66,26 +66,39 @@ class Physics {
     physics.body = body; // eslint-disable-line no-param-reassign
   }
   addConstraint({
-    body,
-    joint,
-    pivot,
-    point,
+    axisA,
+    axisB,
+    bodyA,
+    bodyB,
+    pivotA,
+    pivotB,
+    type,
   }) {
     const { constraints, world } = this;
-    const constraint = new CANNON.PointToPointConstraint(
-      body,
-      body.quaternion.inverse().vmult(new CANNON.Vec3(
-        point.x,
-        point.y,
-        point.z
-      ).vsub(body.position)),
-      joint,
-      new CANNON.Vec3(
-        pivot[0],
-        pivot[1],
-        pivot[2]
-      )
-    );
+    let constraint;
+    switch (type) {
+      case 'hinge':
+        constraint = new CANNON.HingeConstraint(
+          bodyA,
+          bodyB,
+          {
+            axisA: axisA ? new CANNON.Vec3(axisA[0], axisA[1], axisA[2]) : axisA,
+            axisB: axisB ? new CANNON.Vec3(axisB[0], axisB[1], axisB[2]) : axisB,
+            pivotA: pivotA ? new CANNON.Vec3(pivotA[0], pivotA[1], pivotA[2]) : pivotA,
+            pivotB: pivotB ? new CANNON.Vec3(pivotB[0], pivotB[1], pivotB[2]) : pivotB,
+          }
+        );
+        break;
+      case 'point':
+        constraint = new CANNON.PointToPointConstraint(
+          bodyA,
+          pivotA ? new CANNON.Vec3(pivotA[0], pivotA[1], pivotA[2]) : pivotA,
+          bodyB,
+          pivotB ? new CANNON.Vec3(pivotB[0], pivotB[1], pivotB[2]) : pivotB,
+        );
+        break;
+      default:
+    }
     world.addConstraint(constraint);
     constraints.push(constraint);
     return constraint;

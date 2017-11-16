@@ -5,19 +5,25 @@ import Scene from '../scene';
 class Shooting extends Scene {
   constructor(renderer) {
     const meshes = [];
+    const targets = [];
 
     {
-      // Cubes with physics
+      // Targets
       const count = 8;
-      const distance = 5;
+      const distance = 4;
       const step = (Math.PI * 2) / count;
-      const cubeScale = vec3.fromValues(0.5, 0.5, 0.5);
-      const platformScale = vec3.fromValues(1.0, 0.6, 0.5);
+      const hingeScale = vec3.fromValues(1.0, 0.1, 0.1);
+      const targetScale = vec3.fromValues(1.6, 1.8, 0.4);
       for (let i = 0; i < count; i += 1) {
+        const albedo = vec3.fromValues(
+          0.5 + (Math.random() * 0.5),
+          0.5 + (Math.random() * 0.5),
+          0.5 + (Math.random() * 0.5)
+        );
         const angle = i * step;
         const position = vec3.fromValues(
           Math.cos(angle) * distance,
-          2,
+          distance,
           Math.sin(angle) * distance
         );
         const rotation = quat.rotationTo(
@@ -30,45 +36,37 @@ class Shooting extends Scene {
           vec3.fromValues(0, 0, -1)
         );
         quat.invert(rotation, rotation);
-        meshes.push(
-          new Mesh({
-            albedo: vec3.fromValues(
-              0.5 + (Math.random() * 0.5),
-              0.5 + (Math.random() * 0.5),
-              0.5 + (Math.random() * 0.5)
-            ),
-            model: renderer.getModel('Cube'),
-            physics: {
-              shape: 'box',
-              extents: platformScale,
-              mass: 0,
-            },
-            position,
-            rotation,
-            scale: platformScale,
-          })
-        );
-        for (let y = 0; y < 3; y += 1) {
-          position[1] = 2.5502 + (y * 0.5002);
-          meshes.push(
-            new Mesh({
-              albedo: vec3.fromValues(
-                0.5 + (Math.random() * 0.5),
-                0.5 + (Math.random() * 0.5),
-                0.5 + (Math.random() * 0.5)
-              ),
-              model: renderer.getModel('Cube'),
-              physics: {
-                shape: 'box',
-                extents: cubeScale,
-                mass: 1.0,
-              },
-              position,
-              rotation,
-              scale: cubeScale,
-            })
-          );
-        }
+        const hinge = new Mesh({
+          albedo,
+          model: renderer.getModel('Cube'),
+          physics: {
+            shape: 'box',
+            extents: hingeScale,
+            mass: 0,
+          },
+          position,
+          rotation,
+          scale: hingeScale,
+        });
+        meshes.push(hinge);
+        position[1] -= (hingeScale[1] * 0.5) + 0.2 + (targetScale[1] * 0.5);
+        const target = new Mesh({
+          albedo,
+          model: renderer.getModel('Cube'),
+          physics: {
+            shape: 'box',
+            extents: targetScale,
+            mass: 3.0,
+          },
+          position,
+          rotation,
+          scale: targetScale,
+        });
+        meshes.push(target);
+        targets.push({
+          hinge,
+          target,
+        });
       }
     }
 
@@ -95,6 +93,21 @@ class Shooting extends Scene {
       meshes,
       renderer,
       stagePosition: vec3.fromValues(0, 1.75, 0),
+    });
+
+    targets.forEach(({
+      hinge,
+      target,
+    }) => {
+      this.physics.addConstraint({
+        type: 'hinge',
+        bodyA: hinge.physics.body,
+        pivotA: [0, (hinge.scale[1] * -0.5) - 0.1, 0],
+        axisA: [1, 0, 0],
+        bodyB: target.physics.body,
+        pivotB: [0, (target.scale[1] * 0.5) + 0.1, 0],
+        axisB: [1, 0, 0],
+      });
     });
   }
 }

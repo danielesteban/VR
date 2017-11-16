@@ -54,7 +54,7 @@ class Renderer {
     window.addEventListener('vrdisplaypresentchange', this.onPresentChange.bind(this), false);
     this.onPresentChange();
 
-    this.setScene(Object.keys(Scenes)[0]);
+    this.setScene('Room');
 
     this.onAnimationFrame = this.onAnimationFrame.bind(this);
     requestAnimationFrame(this.onAnimationFrame);

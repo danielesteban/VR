@@ -76,6 +76,39 @@ class Room extends Scene {
       }
     }
 
+    {
+      // Clock
+      const buffer = renderer.getTexture('Label', 512, 256);
+      let lastClock;
+      const onAnimate = () => {
+        let clock = new Date();
+        clock = `${clock.getHours() < 10 ? '0' : ''}${clock.getHours()}:` +
+                `${clock.getMinutes() < 10 ? '0' : ''}${clock.getMinutes()}`;
+        if (clock !== lastClock) {
+          buffer.update(({ ctx, height, width }) => {
+            ctx.fillStyle = 'rgba(0, 0, 0, .5)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#fff';
+            ctx.font = '150px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${clock}`, width * 0.5, height * 0.5);
+          });
+          lastClock = clock;
+        }
+      };
+      meshes.push(
+        new Mesh({
+          blending: true,
+          model: renderer.getModel('Plane'),
+          onAnimate,
+          position: vec3.fromValues(0, 2.6, -distance + 0.6),
+          scale: vec3.fromValues(2, 1, 1),
+          texture: buffer.texture,
+        })
+      );
+    }
+
     super({
       meshes,
       renderer,

@@ -1,4 +1,4 @@
-import { quat, vec2, vec3 } from 'gl-matrix';
+import { quat, vec3 } from 'gl-matrix';
 import Mesh from '../mesh';
 import Scene from '../scene';
 
@@ -8,22 +8,19 @@ class City extends Scene {
 
     {
       // Buildings
-      const count = 64;
+      const count = 40;
       for (let i = 0; i < count; i += 1) {
         const scale = vec3.fromValues(
           10 + (Math.random() * 5),
-          20 + (Math.random() * 64),
+          20 + (Math.random() * 32),
           10 + (Math.random() * 5)
         );
-        const vector = vec2.fromValues(
-          (Math.random() * 2) - 1,
-          (Math.random() * 2) - 1,
-        );
-        vec2.scale(vector, vector, 10 + Math.max(scale[0], scale[1]) + (Math.random() * 16));
+        const minX = Math.random() >= 0.5 ? 10 : 0;
+        const minZ = minX ? 0 : 10;
         const position = vec3.fromValues(
-          vector[0],
-          scale[0] * 0.5,
-          vector[1]
+          (minX + (Math.random() * 32)) * (Math.random() >= 0.5 ? -1 : 1),
+          scale[1] * 0.5,
+          (minZ + (Math.random() * 32)) * (Math.random() >= 0.5 ? -1 : 1)
         );
         const rotation = quat.fromEuler(
           quat.create(),
@@ -39,9 +36,9 @@ class City extends Scene {
             ),
             model: renderer.getModel('Cube'),
             physics: {
+              extents: scale,
               mass: 0,
               shape: 'box',
-              extents: scale,
             },
             position,
             rotation,
@@ -49,28 +46,6 @@ class City extends Scene {
           })
         );
       }
-    }
-
-    {
-      // Main platform
-      const scale = vec3.fromValues(10, 15, 10);
-      meshes.push(
-        new Mesh({
-          albedo: vec3.fromValues(
-            0.5 + (Math.random() * 0.5),
-            0.5 + (Math.random() * 0.5),
-            0.5 + (Math.random() * 0.5)
-          ),
-          model: renderer.getModel('Cube'),
-          physics: {
-            mass: 0,
-            extents: scale,
-            shape: 'box',
-          },
-          position: vec3.fromValues(0, scale[1] * 0.5, 0),
-          scale,
-        })
-      );
     }
 
     {
@@ -97,9 +72,9 @@ class City extends Scene {
 
     {
       // FPS counter
-      const buffer = renderer.getTexture('FPS', 512, 256);
-      let acc = 0;
-      let fps = 0;
+      const buffer = renderer.getTexture('Label', 512, 256);
+      let acc = 1;
+      let fps = -1;
       const onAnimate = (mesh, delta) => {
         fps += 1;
         acc += delta;
@@ -121,7 +96,7 @@ class City extends Scene {
           blending: true,
           model: renderer.getModel('Plane'),
           onAnimate,
-          position: vec3.fromValues(0, 15.001, -1),
+          position: vec3.fromValues(0, 0.001, -1),
           rotation: quat.fromEuler(quat.create(), -90, 0, 0),
           scale: vec3.fromValues(1, 0.5, 1),
           texture: buffer.texture,
@@ -133,7 +108,6 @@ class City extends Scene {
       controllers: 'Guns',
       meshes,
       renderer,
-      stagePosition: vec3.fromValues(0, 15, 0),
     });
   }
 }

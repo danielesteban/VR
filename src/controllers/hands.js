@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, quat } from 'gl-matrix';
 import Mesh from '../mesh';
 import Translocation from './translocation';
 
@@ -58,16 +58,34 @@ const Hands = (scene) => {
               point = pointInPalm;
             }
             if (point) {
-              const constraint = scene.physics.addConstraint({
-                body: point.body,
-                joint: mesh.physics.body,
-                pivot: point === pointInFront ? [0, 0, -0.075] : [0, -0.0375, 0],
-                point: point.hitPointWorld,
+              const r = quat.fromValues(
+                point.body.quaternion.x,
+                point.body.quaternion.y,
+                point.body.quaternion.z,
+                point.body.quaternion.w
+              );
+              quat.invert(r, r);
+              const pivot = vec3.fromValues(
+                point.hitPointWorld.x,
+                point.hitPointWorld.y,
+                point.hitPointWorld.z
+              );
+              vec3.sub(pivot, pivot, vec3.fromValues(
+                point.body.position.x,
+                point.body.position.y,
+                point.body.position.z
+              ));
+              vec3.transformQuat(pivot, pivot, r);
+              constraints[controller] = scene.physics.addConstraint({
+                type: 'point',
+                bodyA: point.body,
+                pivotA: pivot,
+                bodyB: mesh.physics.body,
+                pivotB: point === pointInFront ? [0, 0, -0.075] : [0, -0.0375, 0],
               });
-              constraint.bodyA.angularFactor.set(0.01, 0.01, 0.01);
-              constraint.bodyA.angularVelocity.set(0, 0, 0);
-              constraint.bodyA.velocity.set(0, 0, 0);
-              constraints[controller] = constraint;
+              point.body.angularFactor.set(0.01, 0.01, 0.01);
+              point.body.angularVelocity.set(0, 0, 0);
+              point.body.velocity.set(0, 0, 0);
             }
           }
         } else if (picking) {
