@@ -38,11 +38,11 @@ class Physics {
     let collisionFilterGroup;
     let collisionFilterMask;
     if (type === CANNON.Body.STATIC) {
-      collisionFilterGroup = 1;
-      collisionFilterMask = 2;
-    } else {
       collisionFilterGroup = 2;
-      collisionFilterMask = 1 | 2;
+      collisionFilterMask = 4;
+    } else {
+      collisionFilterGroup = 4;
+      collisionFilterMask = 1 | 2 | 4;
     }
     if (physics.collisionFilterGroup !== undefined) {
       // eslint-disable-next-line prefer-destructuring

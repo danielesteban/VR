@@ -11,7 +11,7 @@ const Plane = {
   ]),
   /* eslint-enable no-multi-spaces, indent */
   type: 'triangles',
-  shader: 'texture',
+  shader: 'vertexuv',
 };
 
 export default Plane;

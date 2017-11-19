@@ -60,8 +60,9 @@ class City extends Scene {
           ),
           model: renderer.getModel('Cube'),
           physics: {
-            mass: 0,
+            collisionFilterGroup: 1,
             extents: scale,
+            mass: 0,
             shape: 'box',
           },
           position: vec3.fromValues(0, scale[1] * -0.5, 0),

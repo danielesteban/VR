@@ -78,8 +78,9 @@ class Shooting extends Scene {
           albedo: vec3.fromValues(0.3, 0, 0.1),
           model: renderer.getModel('Cube'),
           physics: {
-            mass: 0,
+            collisionFilterGroup: 1,
             extents: scale,
+            mass: 0,
             shape: 'box',
           },
           position: vec3.fromValues(0, 1.5, 0),

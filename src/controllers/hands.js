@@ -115,7 +115,6 @@ const Hands = (scene) => {
         shape: 'box',
         extents: [0, 0, 0],
         mass: 0,
-        type: 'kinematic',
       },
       position: vec3.fromValues(0, -1, 0),
       scale: vec3.fromValues(0.05, 0.025, 0.1),

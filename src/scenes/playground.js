@@ -120,8 +120,9 @@ class Playground extends Scene {
           model: renderer.getModel('Cube'),
           onAnimate,
           physics: {
-            mass: 0,
+            collisionFilterGroup: 1,
             extents: scale,
+            mass: 0,
             shape: 'box',
           },
           position: vec3.fromValues(0, 0, 0),
@@ -136,6 +137,7 @@ class Playground extends Scene {
       meshes.push(
         new Mesh({
           model,
+          collisionFilterGroup: 1,
           position: vec3.fromValues(
             -32, 0, 32
           ),

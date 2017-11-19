@@ -65,8 +65,9 @@ class Room extends Scene {
             ),
             model: renderer.getModel('Cube'),
             physics: {
-              mass: 0,
+              collisionFilterGroup: 1,
               extents: scale,
+              mass: 0,
               shape: 'box',
             },
             position: vec3.fromValues(0, y === 0 ? -0.5 : 3.7, 0),

@@ -26,7 +26,7 @@ class Renderer {
     GL.enable(GL.DEPTH_TEST);
     GL.enable(GL.CULL_FACE);
     GL.cullFace(GL.BACK);
-    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+    GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
     GL.blendEquation(GL.FUNC_ADD);
     GL.extensions = {
       EIU: GL.getExtension('OES_element_index_uint'),
@@ -54,7 +54,7 @@ class Renderer {
     window.addEventListener('vrdisplaypresentchange', this.onPresentChange.bind(this), false);
     this.onPresentChange();
 
-    this.setScene('Room');
+    this.setScene('City');
 
     this.onAnimationFrame = this.onAnimationFrame.bind(this);
     requestAnimationFrame(this.onAnimationFrame);

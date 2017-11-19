@@ -34,10 +34,10 @@ class Framebuffer {
     GL.renderbufferStorage(
       GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, this.buffer.width, this.buffer.height
     );
+    GL.bindRenderbuffer(GL.RENDERBUFFER, null);
     GL.framebufferRenderbuffer(
       GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, this.renderbuffer
     );
-    GL.bindRenderbuffer(GL.RENDERBUFFER, null);
 
     GL.bindFramebuffer(GL.FRAMEBUFFER, null);
     this.renderer = renderer;
