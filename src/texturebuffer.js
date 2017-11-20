@@ -16,7 +16,7 @@ class Texturebuffer {
       0,
       GL.RGBA,
       GL.RGBA,
-      GL.UNSIGNED_BYTE,
+      GL.FLOAT,
       this.canvas
     );
 
@@ -37,7 +37,7 @@ class Texturebuffer {
       0,
       0,
       GL.RGBA,
-      GL.UNSIGNED_BYTE,
+      GL.FLOAT,
       canvas
     );
     GL.generateMipmap(GL.TEXTURE_2D);

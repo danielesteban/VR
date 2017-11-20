@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 @import ./fog;
 @import ./lighting;

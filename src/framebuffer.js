@@ -19,7 +19,7 @@ class Framebuffer {
       this.buffer.height,
       0,
       GL.RGBA,
-      GL.UNSIGNED_BYTE,
+      GL.FLOAT,
       null
     );
     GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);

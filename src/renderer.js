@@ -32,6 +32,7 @@ class Renderer {
       EIU: GL.getExtension('OES_element_index_uint'),
       IA: GL.getExtension('ANGLE_instanced_arrays'),
       SD: GL.getExtension('OES_standard_derivatives'),
+      TF: GL.getExtension('OES_texture_float'),
       VAO: GL.getExtension('OES_vertex_array_object'),
     };
 
@@ -54,7 +55,7 @@ class Renderer {
     window.addEventListener('vrdisplaypresentchange', this.onPresentChange.bind(this), false);
     this.onPresentChange();
 
-    this.setScene('City');
+    this.setScene('Room');
 
     this.onAnimationFrame = this.onAnimationFrame.bind(this);
     requestAnimationFrame(this.onAnimationFrame);

@@ -56,9 +56,18 @@ class Physics {
       collisionFilterGroup,
       collisionFilterMask,
       mass: physics.mass,
-      shape: this.getShape(physics),
       type,
     });
+    body.addShape(
+      this.getShape(physics),
+      physics.shapeOffset ? (
+        new CANNON.Vec3(
+          physics.shapeOffset[0],
+          physics.shapeOffset[1],
+          physics.shapeOffset[2]
+        )
+      ) : physics.shapeOffset
+    );
     body.position.set(position[0], position[1], position[2]);
     body.quaternion.set(rotation[0], rotation[1], rotation[2], rotation[3]);
     world.addBody(body);
