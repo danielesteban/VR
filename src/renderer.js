@@ -33,6 +33,11 @@ class Renderer {
       IA: GL.getExtension('ANGLE_instanced_arrays'),
       SD: GL.getExtension('OES_standard_derivatives'),
       TF: GL.getExtension('OES_texture_float'),
+      TFA: (
+        GL.getExtension('EXT_texture_filter_anisotropic') ||
+        GL.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+        GL.getExtension('WEBKIT_EXT_texture_filter_anisotropic')
+      ),
       VAO: GL.getExtension('OES_vertex_array_object'),
     };
 

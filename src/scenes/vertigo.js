@@ -10,11 +10,43 @@ class Vertigo extends Scene {
       // Walls
       const scale = vec3.fromValues(10, 32, 1);
       [
-        [vec3.fromValues(0, scale[1] * 0.5, 5.5), quat.fromEuler(quat.create(), 0, 0, 0)],
-        [vec3.fromValues(5.5, scale[1] * 0.5, 0), quat.fromEuler(quat.create(), 0, -90, 0)],
-        [vec3.fromValues(0, scale[1] * 0.5, -5.5), quat.fromEuler(quat.create(), 0, 180, 0)],
-        [vec3.fromValues(-5.5, scale[1] * 0.5, 0), quat.fromEuler(quat.create(), 0, 90, 0)],
-      ].forEach(([position, rotation]) => {
+        [
+          vec3.fromValues(0, 0, 5.5),
+          vec3.fromValues(scale[0], scale[1] * 2, scale[2]),
+          quat.fromEuler(quat.create(), 0, 0, 0),
+        ],
+        [
+          vec3.fromValues(5.5, scale[1] * 0.5, 0),
+          scale,
+          quat.fromEuler(quat.create(), 0, -90, 0),
+        ],
+        [
+          vec3.fromValues(0, 0, -5.5),
+          vec3.fromValues(scale[0], scale[1] * 2, scale[2]),
+          quat.fromEuler(quat.create(), 0, 180, 0),
+        ],
+        [
+          vec3.fromValues(-5.5, scale[1] * 0.5, 0),
+          scale,
+          quat.fromEuler(quat.create(), 0, 90, 0),
+        ],
+
+        [
+          vec3.fromValues(5.5, -5.0 - (scale[1] * 0.5), 0),
+          scale,
+          quat.fromEuler(quat.create(), 0, -90, 0),
+        ],
+        [
+          vec3.fromValues(-5.5, -5.0 - (scale[1] * 0.5), 0),
+          scale,
+          quat.fromEuler(quat.create(), 0, 90, 0),
+        ],
+        [
+          vec3.fromValues(0, -scale[1], 0),
+          vec3.fromValues(10, 1, 10),
+          quat.create(),
+        ],
+      ].forEach(([position, scale, rotation]) => {
         meshes.push(
           new Mesh({
             albedo: vec3.fromValues(
@@ -38,7 +70,7 @@ class Vertigo extends Scene {
 
     // Main platforms
     [
-      [vec3.fromValues(0, -0.5, 0), vec3.fromValues(1, 1, 10), vec3.fromValues(0, 0, 0)],
+      [vec3.fromValues(0, -0.25, 0), vec3.fromValues(1, 0.5, 10), vec3.fromValues(0, 0, 0)],
       [vec3.fromValues(4.8, -0.15, 0), vec3.fromValues(5, 0.3, 10), vec3.fromValues(0.45, 0, 0)],
       [vec3.fromValues(-4.8, -0.15, 0), vec3.fromValues(5, 0.3, 10), vec3.fromValues(-0.45, 0, 0)],
     ].forEach(([position, scale, origin], i) => {

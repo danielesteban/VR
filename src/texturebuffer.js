@@ -1,6 +1,7 @@
 class Texturebuffer {
   constructor(renderer, width = 512, height = 512) {
     const { GL } = renderer;
+    const { extensions: { TFA } } = GL;
 
     /* 2D Renderer */
     this.canvas = document.createElement('canvas');
@@ -11,12 +12,19 @@ class Texturebuffer {
     /* Texture */
     this.texture = GL.createTexture();
     GL.bindTexture(GL.TEXTURE_2D, this.texture);
+    if (TFA) {
+      GL.texParameterf(
+        GL.TEXTURE_2D,
+        TFA.TEXTURE_MAX_ANISOTROPY_EXT,
+        GL.getParameter(TFA.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+      );
+    }
     GL.texImage2D(
       GL.TEXTURE_2D,
       0,
       GL.RGBA,
       GL.RGBA,
-      GL.FLOAT,
+      GL.UNSIGNED_BYTE,
       this.canvas
     );
 
@@ -37,7 +45,7 @@ class Texturebuffer {
       0,
       0,
       GL.RGBA,
-      GL.FLOAT,
+      GL.UNSIGNED_BYTE,
       canvas
     );
     GL.generateMipmap(GL.TEXTURE_2D);
