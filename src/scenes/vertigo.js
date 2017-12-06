@@ -122,6 +122,7 @@ class Vertigo extends Scene {
     });
 
     super({
+      controllers: 'Guns',
       meshes,
       renderer,
     });
